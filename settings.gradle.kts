@@ -1,3 +1,5 @@
+import io.github.siloverse.build.SiloverseBuild
+
 pluginManagement {
     repositories {
         maven {
@@ -9,21 +11,12 @@ pluginManagement {
         }
         gradlePluginPortal()
         mavenCentral()
+        mavenLocal()
     }
-    resolutionStrategy {
-        eachPlugin {
-            val markerArtifactId = when (requested.id.id) {
-                "io.github.siloverse.kotlin-library" -> "kotlin-library-plugin"
-                "io.github.siloverse.kotlin-application" -> "kotlin-application-plugin"
-                "io.github.siloverse.spring-boot-application" -> "spring-boot-application-plugin"
-                else -> null
-            }
+}
 
-            if (markerArtifactId != null) {
-                useModule("io.github.siloverse.gradle:$markerArtifactId:${requested.version}")
-            }
-        }
-    }
+plugins {
+    id("io.github.siloverse.parent") version "1.10.0" apply false
 }
 
 dependencyResolutionManagement {
@@ -37,11 +30,15 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        mavenLocal()
     }
 
     versionCatalogs {
         create("libs") {
-            from("io.github.siloverse.gradle:version-catalog:1.0.2")
+            from("io.github.siloverse.gradle:version-catalog:${SiloverseBuild.version}")
+        }
+        create("local") {
+            from(files("gradle/dep.versions.toml"))
         }
     }
 }
@@ -52,5 +49,3 @@ include("silo")
 include("web")
 include("messages")
 include("ui")
-
-//includeBuild("build-logic")
