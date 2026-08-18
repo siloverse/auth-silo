@@ -3,15 +3,15 @@ plugins {
 }
 
 application {
-    mainClass.set("io.github.siloverse.ApplicationKt")
+    mainClass.set("io.github.siloverse.auth.ApplicationKt")
 }
 
 dependencies {
-    implementation(local.bundles.spring.security)
 
-    implementation(libs.bundles.spring.web)
-    testImplementation(libs.bundles.testcontainers)
     implementation(project(":messages"))
     implementation(project(":ui"))
     implementation(project(":web"))
+
+    implementation(libs.bundles.spring.web)
+
 }
