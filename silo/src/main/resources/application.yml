@@ -1,0 +1,19 @@
+server:
+  port: 10001
+spring:
+  application:
+    name: auth-silo
+  security:
+    oauth2:
+      client:
+        provider:
+          auth-server:
+            issuer-uri: https://keycloak.macgrant-platform.test/realms/kyc
+        registration:
+          auth-silo:
+            provider: auth-server
+            client-id: auth-silo
+            client-secret: XOJaDt5Wg0PoqTuGZoEdMBbxwQjhg2lo
+            scope: openid,profile,roles,email
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/auth-silo

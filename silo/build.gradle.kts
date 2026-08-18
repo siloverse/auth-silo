@@ -1,5 +1,5 @@
 plugins {
-    id("io.github.siloverse.spring-boot-application") version "1.0.2"
+    id("io.github.siloverse.spring-boot-application")
 }
 
 application {
@@ -7,9 +7,10 @@ application {
 }
 
 dependencies {
-    implementation(libs.spring.boot.starter.web)
-    implementation(libs.jackson.module.kotlin)
-    testImplementation(libs.testcontainers.postgresql)
+    implementation(local.bundles.spring.security)
+
+    implementation(libs.bundles.spring.web)
+    testImplementation(libs.bundles.testcontainers)
     implementation(project(":messages"))
     implementation(project(":ui"))
     implementation(project(":web"))

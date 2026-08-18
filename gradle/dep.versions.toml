@@ -1,6 +1,9 @@
 [versions]
 
 [libraries]
-
+spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
 
 [plugins]
+
+[bundles]
+spring-security = ["spring-boot-starter-oauth2-client"]
