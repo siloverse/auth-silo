@@ -15,4 +15,6 @@ dependencies {
     implementation(libs.bundles.spring.web)
     implementation(local.bundles.spring.security)
 
+    testImplementation(local.spring.security.test)
+    testImplementation(local.spring.boot.webmvc.test)
 }
