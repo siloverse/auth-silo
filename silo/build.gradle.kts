@@ -13,5 +13,6 @@ dependencies {
     implementation(project(":web"))
 
     implementation(libs.bundles.spring.web)
+    implementation(local.bundles.spring.security)
 
 }
