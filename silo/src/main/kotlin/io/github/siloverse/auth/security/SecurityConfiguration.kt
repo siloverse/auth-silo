@@ -1,4 +1,4 @@
-package io.github.siloverse.auth.web.security
+package io.github.siloverse.auth.security
 
 import jakarta.servlet.DispatcherType
 import org.springframework.context.annotation.Bean
