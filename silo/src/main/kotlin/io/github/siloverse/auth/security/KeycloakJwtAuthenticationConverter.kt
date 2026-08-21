@@ -1,4 +1,4 @@
-package io.github.siloverse.auth.security
+package io.github.siloverse.auth.web.security
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken

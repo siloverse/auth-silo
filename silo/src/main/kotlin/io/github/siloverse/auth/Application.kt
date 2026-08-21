@@ -1,4 +1,4 @@
-package io.github.siloverse.auth
+package io.github.siloverse.auth.web
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

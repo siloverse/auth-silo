@@ -1,4 +1,4 @@
-package io.github.siloverse.auth.controller
+package io.github.siloverse.auth.web.controller
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
