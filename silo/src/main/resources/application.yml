@@ -8,6 +8,19 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://keycloak.macgrant-platform.test/realms/kyc
+      client:
+        registration:
+          auth-silo:
+            provider: keycloak
+            client-id: auth-silo
+            client-secret: ${AUTH_SILO_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+        provider:
+          keycloak:
+            issuer-uri: https://keycloak.macgrant-platform.test/realms/kyc
+keycloak:
+  admin-base-url: https://keycloak.macgrant-platform.test/admin/realms/kyc
+
 logging:
   level:
     org.springframework.security: TRACE
