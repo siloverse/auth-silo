@@ -1,7 +1,7 @@
-package io.github.siloverse.auth.web.controller
+package io.github.siloverse.auth.controller
 
-import io.github.siloverse.auth.web.error.DuplicateUserException
-import io.github.siloverse.auth.web.keycloak.KeycloakUserClient
+import io.github.siloverse.auth.error.DuplicateUserException
+import io.github.siloverse.auth.keycloak.KeycloakUserClient
 import io.github.siloverse.auth.web.request.RegistrationRequest
 import io.github.siloverse.auth.web.response.RegistrationResponse
 import jakarta.validation.Valid

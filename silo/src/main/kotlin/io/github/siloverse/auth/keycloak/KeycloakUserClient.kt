@@ -1,6 +1,6 @@
-package io.github.siloverse.auth.web.keycloak
+package io.github.siloverse.auth.keycloak
 
-import io.github.siloverse.auth.web.error.DuplicateUserException
+import io.github.siloverse.auth.error.DuplicateUserException
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException

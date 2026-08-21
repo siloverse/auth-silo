@@ -1,4 +1,4 @@
-package io.github.siloverse.auth.request;
+package io.github.siloverse.auth.web.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
