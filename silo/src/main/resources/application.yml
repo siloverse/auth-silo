@@ -19,7 +19,10 @@ spring:
           keycloak:
             issuer-uri: https://keycloak.macgrant-platform.test/realms/kyc
 keycloak:
-  admin-base-url: https://keycloak.macgrant-platform.test/admin/realms/kyc
+  base-url: https://keycloak.macgrant-platform.test/admin/realms/kyc
+
+user-silo:
+  base-url: https://user-silo.macgrant-platform.test
 
 logging:
   level:
