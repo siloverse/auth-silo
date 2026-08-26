@@ -1,7 +1,9 @@
 package io.github.siloverse.auth.user.service
 
+import io.github.siloverse.auth.error.UserAlreadyProvisionedException
 import io.github.siloverse.user.web.request.CreateUserRequest
 import io.github.siloverse.user.web.response.CreateUserResponse
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -18,6 +20,10 @@ class UserSiloService(
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
-            .body<CreateUserResponse>()!!
+            .onStatus({ it == HttpStatus.CONFLICT }) { _, _ ->
+                throw UserAlreadyProvisionedException(request.keycloakId)
+            }
+            .body<CreateUserResponse>()
+            ?: error("empty body from user-silo for keycloakId=${request.keycloakId}")
     }
 }

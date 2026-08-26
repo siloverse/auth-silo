@@ -1,8 +1,22 @@
 # CHECKPOINT — auth-silo
 
-_Last updated: 2026-08-20. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
+_Last updated: 2026-08-26. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
 
 **Role in the platform:** registration orchestrator. Public `POST /api/registrations` (Phase 3) → creates the user in Keycloak (Admin API, client-credentials as its own service account, which holds realm-management `manage-users`) and in user-silo. Resource server for everything else. Base package `io.github.siloverse.auth`.
+
+## Built & green (Phase 4.3 + 4.5, 2026-08-26) — user-silo mint call, failure honesty, orphan healing
+
+- **Registration now spans both silos:** after Keycloak create + role assign, `UserSiloService` POSTs user-silo's `POST /api/users` (contract DTOs from user-silo `web` 1.1.3 — released, not SNAPSHOT) through a dedicated `userSiloClient` RestClient sharing the same SA wallet. Full ladder verified live: 201 → row in `user_silo.users` → new-user login → `/me` shows `ROLE_CUSTOMER`; duplicate → 409.
+- **Failure honesty (4.5):** user-silo unreachable (`ResourceAccessException`) or 5xx (`HttpServerErrorException`) → `UserProvisioningFailedException(keycloakId)` → controller handler logs ERROR **naming the orphaned keycloakId** and returns **502** (not 500 — a dependency failed, auth-silo didn't; 500 pages the wrong on-call). Verified live: kill user-silo → 502 + orphan ERROR line.
+- **Registration is idempotent — orphan healing (decision):** on Keycloak-duplicate, resolve the existing user id by email and CONTINUE the pipeline (re-assign role = no-op, call user-silo anyway). user-silo 201 → orphan healed, client gets 201; user-silo 409 (translated at the client boundary via `retrieve().onStatus(CONFLICT)` → `UserAlreadyProvisionedException`) → user fully exists → genuine 409. Verified live: manufactured orphan (user-silo down mid-registration) healed to 201 + row on retry; second retry 409; pre-existing full users still 409. Rationale over compensation (delete-on-failure): the delete can itself fail — compensation needs compensation; retry-heals is self-correcting. Each step is converge-to-desired-state, which is what makes the endpoint idempotent.
+- Design shape: HTTP status codes are translated to domain exceptions at the client boundary (`onStatus` in `UserSiloService`); `UserService` reasons only in domain terms.
+
+## Parked (Phase 4.3 review, 2026-08-26)
+
+- **Interceptor doubled in `ClientConfiguration`:** `OAuth2ClientHttpRequestInterceptor(clientManager)` composed with the manual authorize+setBearerAuth lambda — the manual block overwrites the header, so the Spring interceptor is dead weight. Pick one (configure the Spring one with a clientRegistrationId resolver, or keep the lambda alone).
+- `RegistrationController` injects `KeycloakClient` and never uses it — delete.
+- Test users in realm + DB: ladder43/45, heal-t1/t5, orphan44 (all `@macgrant-platform.test`, synthetic per standing rule).
+- Observed on registered humans: `ROLE_DEFAULT-ROLES-KYC` authority (Keycloak default composite). Inert under allowlist authorization; noted so it isn't rediscovered as a surprise.
 
 ## Built & green (Phase 3 core, 2026-08-21)
 
