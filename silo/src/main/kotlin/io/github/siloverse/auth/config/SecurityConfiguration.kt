@@ -24,7 +24,11 @@ class SecurityConfiguration {
             .authorizeHttpRequests {
                 it.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/registrations").permitAll()
-                it.requestMatchers("/actuator/health").permitAll()
+                it.requestMatchers(
+                    "/actuator/health",
+                    "/actuator/prometheus",
+                    "/actuator/info"
+                ).permitAll()
                 it.anyRequest().authenticated()
             }
             .oauth2ResourceServer {

@@ -14,11 +14,11 @@ class ClientConfiguration {
 
     @Bean
     fun keycloakAdminRestClient(
+        builder: RestClient.Builder,
         keycloakClientSettings: KeycloakClientSettings,
         clientManager: OAuth2AuthorizedClientManager
     ): RestClient {
-        return RestClient.builder()
-            .baseUrl(keycloakClientSettings.baseUrl)
+        return builder.baseUrl(keycloakClientSettings.baseUrl)
             .requestInterceptor(oauth2ClientCredentialsInterceptor(clientManager))
             .build()
     }
@@ -26,11 +26,11 @@ class ClientConfiguration {
 
     @Bean
     fun userSiloClient(
+        builder: RestClient.Builder,
         userSiloClientSettings: UserSiloClientSettings,
         clientManager: OAuth2AuthorizedClientManager
     ): RestClient {
-        return RestClient.builder()
-            .baseUrl(userSiloClientSettings.baseUrl)
+        return builder.baseUrl(userSiloClientSettings.baseUrl)
             .requestInterceptor(oauth2ClientCredentialsInterceptor(clientManager))
             .build()
     }
