@@ -13,7 +13,7 @@ spring:
           auth-silo:
             provider: keycloak
             client-id: auth-silo
-            client-secret: ${AUTH_SILO_CLIENT_SECRET}
+            client-secret: d63cc0f7dd2f4c3179e3e615284886e6d34f1ef9bb9a4d73
             authorization-grant-type: client_credentials
         provider:
           keycloak:
