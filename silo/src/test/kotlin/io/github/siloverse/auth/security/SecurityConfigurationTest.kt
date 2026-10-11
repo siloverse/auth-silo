@@ -8,6 +8,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test") // application-test.yml: no network at context start
 class SecurityConfigurationTest {
 
     @Autowired
