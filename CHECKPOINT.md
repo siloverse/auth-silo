@@ -1,8 +1,15 @@
 # CHECKPOINT — auth-silo
 
-_Last updated: 2026-08-26. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
+_Last updated: 2026-10-11. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
 
 **Role in the platform:** registration orchestrator. Public `POST /api/registrations` (Phase 3) → creates the user in Keycloak (Admin API, client-credentials as its own service account, which holds realm-management `manage-users`) and in user-silo. Resource server for everything else. Base package `io.github.siloverse.auth`.
+
+## State at merge to main (2026-10-11)
+
+- Branch `rename-project` (2026-08-18 to 2026-09-03) merged: rename to auth-silo, release 0.0.1, resource server (Phase 2), Keycloak Admin API registration via a client-credentials wallet (Phase 3), user-silo call with failure honesty and orphan healing (Phase 4.3/4.5), observability (Phase 6), Spring `OAuth2ClientHttpRequestInterceptor` replacing the manual bearer lambda (2026-08-27), siloverse-build 1.11.1, security test repointed at a test-only claims probe after `/api/users/me` was pruned (2026-09-03).
+- **Released:** `0.0.1`. Nothing depends on this silo's artifacts; no release is pending. Version is `0.0.2-SNAPSHOT`.
+- Pins user-silo `web` `1.1.4-SNAPSHOT` from mavenLocal; CI will be red until user-silo 1.1.4 is released and pinned.
+- Resolved since the parked lists below were written: the doubled interceptor (only the Spring interceptor remains), the unused `KeycloakClient` injection in `RegistrationController`, and the local `/api/users/me` copy (pruned). Still parked: Keycloak-down 503 mapping, registration endpoint tests, the `web` module's validation dependency scope.
 
 ## Built & green (Phase 4.3 + 4.5, 2026-08-26) — user-silo mint call, failure honesty, orphan healing
 
@@ -13,8 +20,8 @@ _Last updated: 2026-08-26. This document is the arbiter: if Claude asserts somet
 
 ## Parked (Phase 4.3 review, 2026-08-26)
 
-- **Interceptor doubled in `ClientConfiguration`:** `OAuth2ClientHttpRequestInterceptor(clientManager)` composed with the manual authorize+setBearerAuth lambda — the manual block overwrites the header, so the Spring interceptor is dead weight. Pick one (configure the Spring one with a clientRegistrationId resolver, or keep the lambda alone).
-- `RegistrationController` injects `KeycloakClient` and never uses it — delete.
+- ~~**Interceptor doubled in `ClientConfiguration`:**~~ RESOLVED 2026-08-27 (Spring interceptor alone). `OAuth2ClientHttpRequestInterceptor(clientManager)` composed with the manual authorize+setBearerAuth lambda — the manual block overwrites the header, so the Spring interceptor is dead weight. Pick one (configure the Spring one with a clientRegistrationId resolver, or keep the lambda alone).
+- ~~`RegistrationController` injects `KeycloakClient` and never uses it — delete.~~ RESOLVED.
 - Test users in realm + DB: ladder43/45, heal-t1/t5, orphan44 (all `@macgrant-platform.test`, synthetic per standing rule).
 - Observed on registered humans: `ROLE_DEFAULT-ROLES-KYC` authority (Keycloak default composite). Inert under allowlist authorization; noted so it isn't rediscovered as a surprise.
 
@@ -42,5 +49,5 @@ _Last updated: 2026-08-26. This document is the arbiter: if Claude asserts somet
 - **Keycloak-down mapping (plan 3.3):** currently a raw 500; decide and implement 503 + no partial state (`ResourceAccessException`/5xx handler).
 - **Registration tests** — the endpoint has no coverage yet (unit for KeycloakUserClient error paths, jwt()/anonymous rules for the permitAll).
 - `web/build.gradle.kts` uses `implementation(spring-boot-starter-validation)`; honest scope for a contract module is `api(jakarta.validation-api)`.
-- `/api/users/me` was added here for chain testing; semantically it belongs to user-silo — replace with the Phase 4.4 *relay* variant and delete the local copy.
+- ~~`/api/users/me` was added here for chain testing;~~ PRUNED 2026-09-03; semantically it belongs to user-silo — replace with the Phase 4.4 *relay* variant and delete the local copy.
 - Next: auth-silo → user-silo synchronous call (Phase 4), token-fetch-count observation across two registrations (wallet caching Reflect) if not yet recorded.
