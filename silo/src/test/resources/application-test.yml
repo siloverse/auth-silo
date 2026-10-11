@@ -1,0 +1,16 @@
+# Hermetic test profile. Boot resolves an OAuth2 CLIENT provider declared by issuer-uri
+# EAGERLY (OIDC discovery while building the ClientRegistrationRepository bean), so a
+# context test would dial Keycloak at startup. The resource-server side is lazy and is
+# left alone. The wallet's registration is pointed at a throwaway provider with an
+# explicit token-uri instead: no discovery, and nothing is contacted until a token is
+# actually requested, which no context test does.
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          auth-silo:
+            provider: test
+        provider:
+          test:
+            token-uri: http://localhost:1/realms/kyc/protocol/openid-connect/token
