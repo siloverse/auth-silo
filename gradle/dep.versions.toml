@@ -1,5 +1,5 @@
 [versions]
-user-silo = "1.1.4-SNAPSHOT"
+user-silo = "1.1.4"
 
 [libraries]
 spring-boot-restclient = { module = "org.springframework.boot:spring-boot-restclient" }
