@@ -21,8 +21,9 @@ spring:
 keycloak:
   base-url: https://keycloak.macgrant-platform.test/admin/realms/kyc
 
-user-silo:
-  base-url: https://user-silo.macgrant-platform.test
+clients:
+  user-silo:
+    url: https://user-silo.macgrant-platform.test   # read by the generated user-silo client
 
 logging:
   level:

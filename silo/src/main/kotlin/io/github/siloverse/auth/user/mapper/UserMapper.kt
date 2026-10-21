@@ -2,7 +2,7 @@ package io.github.siloverse.auth.user.mapper
 
 import io.github.siloverse.auth.keycloak.model.UserIdentity
 import io.github.siloverse.auth.web.request.RegistrationRequest
-import io.github.siloverse.user.web.request.CreateUserRequest
+import io.github.siloverse.user.client.model.CreateUserRequest
 import org.springframework.stereotype.Component
 import java.util.UUID
 
