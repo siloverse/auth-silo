@@ -1,6 +1,5 @@
 [versions]
-# TEMPORARY snapshot pin (mavenLocal) until user-silo 1.1.5 is released with its kotlin-client.
-user-silo = "1.1.5-SNAPSHOT"
+user-silo = "1.1.5"
 
 [libraries]
 spring-boot-restclient = { module = "org.springframework.boot:spring-boot-restclient" }
