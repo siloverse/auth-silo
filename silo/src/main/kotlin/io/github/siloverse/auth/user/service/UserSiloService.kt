@@ -1,29 +1,25 @@
 package io.github.siloverse.auth.user.service
 
 import io.github.siloverse.auth.error.UserAlreadyProvisionedException
-import io.github.siloverse.user.web.request.CreateUserRequest
-import io.github.siloverse.user.web.response.CreateUserResponse
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import io.github.siloverse.user.client.api.UserControllerApi
+import io.github.siloverse.user.client.model.CreateUserRequest
+import io.github.siloverse.user.client.model.CreateUserResponse
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestClient
-import org.springframework.web.client.body
+import org.springframework.web.client.HttpClientErrorException
 
+/**
+ * Talks to user-silo through its generated client: the request and response types, the path
+ * and the HTTP method come from user-silo's committed OpenAPI contract, not from code written here.
+ */
 @Service
 class UserSiloService(
-    private val userSiloClient: RestClient,
+    private val userControllerApi: UserControllerApi,
 ) {
 
-    fun registerUser(request: CreateUserRequest): CreateUserResponse {
-        return userSiloClient.post()
-            .uri("/api/users")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(request)
-            .retrieve()
-            .onStatus({ it == HttpStatus.CONFLICT }) { _, _ ->
-                throw UserAlreadyProvisionedException(request.keycloakId)
-            }
-            .body<CreateUserResponse>()
-            ?: error("empty body from user-silo for keycloakId=${request.keycloakId}")
-    }
+    fun registerUser(request: CreateUserRequest): CreateUserResponse =
+        try {
+            userControllerApi.create(request)
+        } catch (e: HttpClientErrorException.Conflict) {
+            throw UserAlreadyProvisionedException(request.keycloakId)
+        }
 }

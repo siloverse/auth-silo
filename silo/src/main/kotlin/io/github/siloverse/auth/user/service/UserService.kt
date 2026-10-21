@@ -6,7 +6,6 @@ import io.github.siloverse.auth.error.UserProvisioningFailedException
 import io.github.siloverse.auth.user.mapper.UserMapper
 import io.github.siloverse.auth.keycloak.service.KeycloakService
 import io.github.siloverse.auth.web.request.RegistrationRequest
-import io.github.siloverse.user.web.response.CreateUserResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpServerErrorException
@@ -41,6 +40,6 @@ class UserService(
         } catch (e: HttpServerErrorException) {
             throw UserProvisioningFailedException(userId, e)
         }
-        return resp.id
+        return resp.id ?: error("user-silo answered 201 without an id for keycloakId=$userId")
     }
 }

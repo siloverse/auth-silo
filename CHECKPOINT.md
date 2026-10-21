@@ -51,3 +51,10 @@ _Last updated: 2026-10-11. This document is the arbiter: if Claude asserts somet
 - `web/build.gradle.kts` uses `implementation(spring-boot-starter-validation)`; honest scope for a contract module is `api(jakarta.validation-api)`.
 - ~~`/api/users/me` was added here for chain testing;~~ PRUNED 2026-09-03; semantically it belongs to user-silo — replace with the Phase 4.4 *relay* variant and delete the local copy.
 - Next: auth-silo → user-silo synchronous call (Phase 4), token-fetch-count observation across two registrations (wallet caching Reflect) if not yet recorded.
+
+## user-silo through its generated client (2026-10-21, branch `openapi`)
+
+- The hand-written `userSiloClient` RestClient bean, `UserSiloClientSettings` (`user-silo.base-url`) and the `io.github.siloverse.user-silo:web` contract jar are GONE. auth-silo depends on `io.github.siloverse.user-silo:kotlin-client` (generated from user-silo's committed `openapi-spec.yaml`, released with user-silo). `UserSiloService` injects `UserControllerApi` and calls `create(CreateUserRequest)`; the request/response types, path and method come from the contract. 409 arrives as `HttpClientErrorException.Conflict` → `UserAlreadyProvisionedException` (was `.onStatus`); `ResourceAccessException`/`HttpServerErrorException` handling in `UserService` unchanged.
+- The client's auto-configuration builds `user-silo-client` from `clients.user-silo.url` (application.yml) and this silo's own instrumented `RestClient.Builder`; the client-credentials wallet is added through the `user-silo-customizer` bean (`Consumer<RestClient.Builder>`) — the consumer adds only what only it knows.
+- `CreateUserResponse.id` is nullable in the generated model because user-silo's DTO does not mark it required in the spec (`resp.id ?: error(...)` for now; fix on the user-silo side: `@field:NotNull`/`@Schema(requiredMode = REQUIRED)` so the contract says required).
+- **Pending:** `1.1.5-SNAPSHOT` pin resolves from mavenLocal until user-silo 1.1.5 is released; CI red only for that. Live registration (Keycloak + user-silo via Traefik) still to be re-run with this client.
