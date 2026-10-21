@@ -58,3 +58,11 @@ _Last updated: 2026-10-11. This document is the arbiter: if Claude asserts somet
 - The client's auto-configuration builds `user-silo-client` from `clients.user-silo.url` (application.yml) and this silo's own instrumented `RestClient.Builder`; the client-credentials wallet is added through the `user-silo-customizer` bean (`Consumer<RestClient.Builder>`) — the consumer adds only what only it knows.
 - `CreateUserResponse.id` is nullable in the generated model because user-silo's DTO does not mark it required in the spec (`resp.id ?: error(...)` for now; fix on the user-silo side: `@field:NotNull`/`@Schema(requiredMode = REQUIRED)` so the contract says required).
 - **Pending:** `1.1.5-SNAPSHOT` pin resolves from mavenLocal until user-silo 1.1.5 is released; CI red only for that. Live registration (Keycloak + user-silo via Traefik) still to be re-run with this client.
+
+## ✅ Live registration through the generated client (2026-10-21 14:04)
+
+Platform VM had to be hard power-cycled first (guest kernel RCU stalls, systemd-networkd/resolved never started; `vagrant reload` hung on the graceful halt — `vagrant halt -f` + `vagrant up` fixed it; VirtualBox 7.2.10 on host kernel 7.0.0-38 runs the VM through /dev/kvm). Then user-silo and auth-silo on the host, `POST https://auth-silo.macgrant-platform.test/api/registrations` for `live-client-140406@example.test`:
+- **201** `{"userId":"05e3f034-a497-4481-b27a-bd30adbeaa53"}`; repeat → **409**.
+- user-silo row: `user_silo.users` id `05e3f034-…`, display name "Live Client".
+- Tempo trace `869946b4390ebda150cc7bf8463eefb1` (via Grafana's datasource proxy — Tempo's API is not routed through Traefik; `tempo.` answers 404): auth-silo 10 spans incl. the outgoing `http post` from the generated `UserControllerApi`, user-silo 6 spans incl. `http post /api/users` + `authenticate bearertoken` — the `user-silo-customizer` wallet attached the client-credentials token, and the client built from the instrumented `RestClient.Builder` kept the trace continuous.
+The generated client is proven live; the hand-written client and the `web` contract jar are history.
